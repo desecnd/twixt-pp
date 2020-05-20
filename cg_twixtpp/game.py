@@ -218,7 +218,7 @@ class GraphicTwixTPP(TwixTPP):
             self.logic.makeMove(boardPos)
             self.drawBoard()
             print(boardPos)
-            botMove = self.botHandler.getMove(self.posToPegt (boardPos))
+            botMove = self.botHandler.getMove(self.posToPeg(boardPos))
             print(botMove)
             if botMove:
                 self.logic.makeMove(self.pegToPos(botMove))
