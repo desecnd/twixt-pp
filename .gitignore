@@ -1,0 +1,7 @@
+*.out
+*.code-workspace
+.vscode
+__pycache__
+!*.py
+!*.h
+!*.cpp
