@@ -1,10 +1,12 @@
 from subprocess import Popen, PIPE
+import pathlib
 
 class BotHandler():
-    def activateBot(self):
-        self.processHandle = Popen('cg_twixtpp/bot', stdin=PIPE,  stdout=PIPE, stderr=PIPE, shell=True) 
+    def __init__(self, botFile):
+        self.botPath = str(pathlib.Path(__file__).parent.absolute()) + '/' + botFile
+        self.processHandle = Popen(self.botPath, stdin=PIPE,  stdout=PIPE, stderr=PIPE, shell=True) 
 
-    def queryBot(self, enemyMove):
+    def getMove(self, enemyMove):
         if self.processHandle.poll():
             return None 
         
@@ -14,11 +16,9 @@ class BotHandler():
         move = self.processHandle.stdout.readline().decode('UTF-8').split()
         return move[0]
         
-    def terminateBot(self):
+    def __del__(self):
         self.processHandle.terminate()
 
 if __name__ == '__main__':
-    bhand = BotHandler()
-    bhand.activateBot()
-    print(bhand.queryBot('B3'))
-    bhand.terminateBot()
+    bhand = BotHandler('bot')
+    print(bhand.getMove('FIRST'))
