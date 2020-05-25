@@ -42,4 +42,8 @@ public:
     constexpr int col() const noexcept { return col_; }
 };
 
+constexpr inline Position rotate(const Position& position) { 
+    return Position(-position.col(), position.row()); 
+}
+
 std::ostream& operator<<(std::ostream &out, const Position &pos);
