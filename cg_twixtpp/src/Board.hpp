@@ -5,6 +5,7 @@
 #include "Collisions.h"
 
 #include <iostream>
+#include <queue>
 // player 1 or 2 
 // position taken on empty
 
@@ -35,8 +36,9 @@ private:
     void markLink(Position pos, Direction dir, int player) { 
         links_[index(pos)] |= (1 << (DIRECTIONS * (player - 1) + static_cast<int>(dir)));
         links_[index(pos + getVector(dir))] |= (1 << (DIRECTIONS * (player - 1) + static_cast<int>(opposite(dir))));
-    }
 
+        std::cerr << "Created link: " << pos << " -> " << static_cast<int>(dir) << ", for player" << player << "\n";
+    }
 
     bool linkExist(Position pos, Direction dir, int player) const {
         return (links_[index(pos)] & ( 1<<(DIRECTIONS * player + static_cast<int>(dir)) ));
@@ -50,6 +52,8 @@ private:
         return true;
     }
 
+    void dfs(std::vector<std::vector<int>>& vis, Position pos, int player);
+
 public:
     Board() = default;
 
@@ -60,6 +64,7 @@ public:
     }
 
     void makeMove(Position pos);
+    bool isGameOver();
     void debug();
 };
 
