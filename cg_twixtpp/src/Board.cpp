@@ -1,6 +1,6 @@
 #include "Board.hpp"
 
-void Board::makeMove(Position pos) {
+void Board::takePeg(Position pos) {
     markPeg(pos, currentPlayer_); 
 
     for (int directionInt = 0; directionInt < DIRECTIONS; directionInt++) {

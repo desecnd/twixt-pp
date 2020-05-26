@@ -2,7 +2,7 @@
 
 #include "Direction.hpp"
 #include "Position.hpp"
-#include "Collisions.h"
+#include "Collisions.hpp"
 
 #include <iostream>
 #include <queue>
@@ -53,7 +53,6 @@ private:
     }
 
     void dfs(std::vector<std::vector<int>>& vis, Position pos, int player);
-
 public:
     Board() = default;
 
@@ -63,7 +62,7 @@ public:
         else return 0;
     }
 
-    void makeMove(Position pos);
+    void takePeg(Position pos);
     bool isGameOver();
     void debug();
 };
