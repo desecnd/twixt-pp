@@ -1,5 +1,7 @@
 #include "Move.hpp"
 
+#include <cassert>
+
 void applyMove(Board& board, Move move) {
     if ( move == "FIRST" ) {
         return;
@@ -21,7 +23,7 @@ Move posToMove(Position pos) {
 }
 
 Position moveToPos(Move move) {
-    Position pos { move[0] - 'A', std::stoi(move.substr(1, move.size() - 1)) - 1 };
+    Position pos { std::stoi(move.substr(1, move.size() - 1)) - 1, move[0] - 'A' };
     return pos;
 }
 
