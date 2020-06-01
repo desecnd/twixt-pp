@@ -5,7 +5,7 @@
 
 class Human : public Player {
 public:
-    Move getMove(Move lastOppMove) {
+    Move getMove(const Board& board) {
         Move myMove;
         std::cin >> myMove;
         return myMove;

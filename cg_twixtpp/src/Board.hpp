@@ -9,7 +9,6 @@
 // player 1 or 2 
 // position taken on empty
 
-
 class Board {
 public:
     static constexpr int kRows { 12 };
@@ -20,7 +19,6 @@ private:
     std::array<std::uint8_t, kRows * kCols> pegs_ {};
     std::array<std::uint16_t, kRows * kCols> links_ {};
 
-
     int index(Position pos) const { 
         return pos.row() * kCols + pos.col(); 
     }
@@ -28,9 +26,11 @@ private:
         return 3 - player; 
     }
 
-    bool valid(Position pos) const { 
-        return (pos.row() >= 0 && pos.row() < kRows && pos.col() >= 0 && pos.col() < kCols );
-    }
+    void dfs(std::vector<std::vector<int>>& vis, Position pos, int player);
+
+public:
+
+    Board() = default;
 
     void markPeg(Position pos, int player) { 
         pegs_[index(pos)] |= (1 << (player - 1)); 
@@ -44,17 +44,15 @@ private:
         // std::cerr << " == {Created link: " << (pos + getVector(dir)) << " -> " << static_cast<int>(opposite(dir)) << ", for player" << player << "}";
     }
 
-    bool linkPossible(Position pos, Direction direction, int player) const {
-        for ( const Link& link : collisionTable_.collisions(direction) ) {
-            if ( valid(pos + link.position) && linkExist(pos + link.position, link.direction, opponent(player)) ) 
-                return false;
-        }
-        return true;
+    bool possible(Position pos, int player) const {
+        return valid(pos) 
+            && (player == 1 ? (pos.col() != 0 && pos.col() != kCols - 1) 
+                : (pos.row() != 0 && pos.row() != kRows - 1) );
     }
 
-    void dfs(std::vector<std::vector<int>>& vis, Position pos, int player);
-public:
-    Board() = default;
+    bool valid(Position pos) const { 
+        return (pos.row() >= 0 && pos.row() < kRows && pos.col() >= 0 && pos.col() < kCols );
+    }
 
     bool linkExist(Position pos, Direction dir, int player) const {
         return (links_[index(pos)] & ( 1<<(DIRECTIONS * (player - 1) + static_cast<int>(dir)) ));
@@ -66,10 +64,22 @@ public:
         else return 0;
     }
 
-    void takePeg(Position pos);
+    bool linkPossible(Position pos, Direction direction, int player) const {
+        for ( const Link& link : collisionTable_.collisions(direction) ) {
+            if ( valid(pos + link.position) && linkExist(pos + link.position, link.direction, opponent(player)) ) 
+                return false;
+        }
+        return true;
+    }
+
+    int setPlayer(int player) { currentPlayer_ = player; }
+
+    int currentPlayer() const { return currentPlayer_; }
+    void takePeg(Position pos, bool noSwap = false);
     bool isGameOver();
     void debug();
 };
 
+void printBoard(std::ostream& out, const Board& board);
 
 extern constexpr CollisionTable Board::collisionTable_;
