@@ -7,6 +7,6 @@
 
 using Move = std::string;
 
-void applyMove(Board& board, Move move);
+bool applyMove(Board& board, Move move);
 Move posToMove(Position pos);
 Position moveToPos(Move move);

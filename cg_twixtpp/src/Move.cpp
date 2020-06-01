@@ -2,17 +2,23 @@
 
 #include <cassert>
 
-void applyMove(Board& board, Move move) {
+bool applyMove(Board& board, Move move) {
     if ( move == "FIRST" ) {
-        return;
+        return true;
     }
     else if ( move == "SWAP" ) {
         assert("The hell should i do with SWAP?");
-        return;
+        return true;
     }
     else {
         Position pos { moveToPos(move) };
-        board.takePeg(pos);
+        if ( board.possible(pos, board.currentPlayer())) {
+            board.takePeg(pos);
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }
 
