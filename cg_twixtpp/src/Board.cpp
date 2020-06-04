@@ -19,7 +19,7 @@ void Board::takePeg(Position pos, bool noSwap ) {
         currentPlayer_ = opponent(currentPlayer_);
 }
 
-void Board::dfs(std::vector<std::vector<int>>& vis, Position pos, int player) {
+void Board::dfs(std::vector<std::vector<int>>& vis, Position pos, int player) const {
     vis[pos.row()][pos.col()] = 1;
 
     for (int directionInt = 0; directionInt < DIRECTIONS; directionInt++) {
@@ -31,7 +31,7 @@ void Board::dfs(std::vector<std::vector<int>>& vis, Position pos, int player) {
     }
 }
 
-bool Board::isGameOver() {
+int Board::isGameOver() const {
     std::vector<std::vector<int>> vis(kRows, std::vector<int>(kCols, 0));
 
     for (int col = 1; col < kCols - 1; col++)
@@ -39,16 +39,16 @@ bool Board::isGameOver() {
             dfs(vis, Position(0, col), 1);
 
     for (int col = 1; col < kCols - 1; col++)
-        if  ( vis[kRows - 1][col] ) return true;
+        if  ( vis[kRows - 1][col] ) return 1;
 
     for (int row = 1; row < kRows - 1; row++)
         if ( pegOwner(Position(row, 0)) == 2 ) 
             dfs(vis, Position(row, 0), 2);
 
     for (int row = 1; row < kRows - 1; row++)
-        if  ( vis[row][kCols - 1] ) return true;
+        if  ( vis[row][kCols - 1] ) return 2;
 
-    return false;
+    return 0;
 }
 
 void Board::debug() {

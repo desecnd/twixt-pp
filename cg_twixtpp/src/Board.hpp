@@ -26,7 +26,7 @@ private:
         return 3 - player; 
     }
 
-    void dfs(std::vector<std::vector<int>>& vis, Position pos, int player);
+    void dfs(std::vector<std::vector<int>>& vis, Position pos, int player) const;
 
 public:
 
@@ -76,7 +76,7 @@ public:
 
     int currentPlayer() const { return currentPlayer_; }
     void takePeg(Position pos, bool noSwap = false);
-    bool isGameOver();
+    int isGameOver() const;
     void debug();
 };
 
