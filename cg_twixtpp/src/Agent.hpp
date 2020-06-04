@@ -11,6 +11,7 @@
 namespace agent {
     class Agent : public Player {
     private:
+        int perspective_;
         Board board_;
         BoardHasher boardHasher_;
         BoardEvaluator boardEvaluator_;
@@ -18,13 +19,14 @@ namespace agent {
         std::unordered_map<Hash, Score> transpositionTable_;
 
         Score evaluateAndRemember(const Board& board);
-        std::pair<Score, Position> ABNegamax(Board board, int maxDepth, int depth, Score a, Score b);
+        std::pair<Score, Position> ABNegamax(Board board, int maxDepth, int depth, Score a, Score b, int color);
     public:
-        Agent(std::mt19937_64& rng) : board_{}, boardHasher_{rng}, 
+        Agent(std::mt19937_64& rng) : perspective_{}, board_{}, boardHasher_{rng}, 
             boardEvaluator_{}, boardMoveOrganizer_{}, transpositionTable_{} {}
-        Move getMove(Move lastOppMove);
-};
 
+        void setPerspective(int player) { perspective_ = (player == 1 ? 1 : -1); }
+        Move getMove(const Board& board);
+    };
 }
 
 /*

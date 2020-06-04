@@ -4,6 +4,8 @@
 
 namespace agent {
 
+    int calculatedLeafs = 0;
+
     Score Agent::evaluateAndRemember(const Board& board) {
         Hash boardHash { boardHasher_.calculateBoardHash(board) };
 
@@ -14,9 +16,11 @@ namespace agent {
         return transpositionTable_[boardHash];
     }
 
-    std::pair<Score, Position> Agent::ABNegamax(Board board, int maxDepth, int depth, Score alpha, Score beta) {
-        if ( depth == maxDepth || board.isGameOver() ) 
-            return std::make_pair( evaluateAndRemember(board), Position(-1,-1)); 
+    std::pair<Score, Position> Agent::ABNegamax(Board board, int maxDepth, int depth, Score alpha, Score beta, int color) {
+        if ( depth == maxDepth || board.isGameOver() ) {
+            calculatedLeafs++;
+            return std::make_pair( color * evaluateAndRemember(board), Position(-1,-1)); 
+        }
 
         Score bestScore = -1e9;
         Position bestPosition { -1, -1 };
@@ -30,7 +34,7 @@ namespace agent {
             Score recursedScore;
 
             std::tie(recursedScore, tempPos) = ABNegamax(newBoard, 
-                    maxDepth, depth + 1, -beta, -std::max(alpha, bestScore));
+                    maxDepth, depth + 1, -beta, -std::max(alpha, bestScore), -color);
 
             Score currentScore = -recursedScore;
 
@@ -39,19 +43,19 @@ namespace agent {
                 bestPosition = currentPosition;
             }
 
-            if ( bestScore >= beta )
+            if ( bestScore >= beta ) 
                 break;
         }
 
         return std::make_pair(bestScore, bestPosition);
     }
 
-    Move Agent::getMove(Move lastOppMove) {
-        applyMove(board_, lastOppMove);
-
+    Move Agent::getMove(const Board& board) {
         Score bestScore;
         Position bestPosition;
-        std::tie(bestScore, bestPosition) = ABNegamax(board_, 2, 0, -1e9, 1e9);
+        calculatedLeafs = 0;
+        std::tie(bestScore, bestPosition) = ABNegamax(board, 2, 0, -1e9, 1e9, perspective_);
+        std::cerr << "AGENT{ " << bestScore << ", " << bestPosition << " }, calcLeaf = " << calculatedLeafs << ";";
         return posToMove(bestPosition);
     }
 }
