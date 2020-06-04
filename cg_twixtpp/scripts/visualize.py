@@ -43,7 +43,6 @@ class GraphicTwixTPP():
         return [ int(move[1:]) - 1, ord(move[0]) - ord('A')   ]
 
     def getBoard(self):
-
         self.pegs = np.zeros((dotsCnt, dotsCnt))
         self.links = []
 
@@ -84,6 +83,8 @@ class GraphicTwixTPP():
         self.window.mainloop()
 
     def drawBoard(self):
+        self.canvas.delete('all')
+
         for link in self.links:
             player = link[0]
 
@@ -128,15 +129,16 @@ class GraphicTwixTPP():
     def click(self, event):
         gridPos = [event.x, event.y]
         boardPos = self.gridToBoardPosition(gridPos)
-        if not self.gameEnded and boardPos and self.pegs[boardPos[0]][boardPos[1]] == 0:
+        if not self.gameEnded and boardPos:
             self.sendMove(self.posToMove(boardPos))
-            self.getBoard()
-            self.drawBoard()
 
             if self.processHandle.poll() != None:
                 winner = self.processHandle.poll()
                 self.gameEnded = True
                 print("Player", winner, "wins!")
+            else:
+                self.getBoard()
+                self.drawBoard()
 
 # gameInstance = ConsoleTwixTPP()
 # print(gameInstance.play(BotHandler('bot'), BotHandler('bot'), 1))
