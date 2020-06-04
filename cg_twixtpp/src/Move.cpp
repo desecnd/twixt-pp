@@ -11,8 +11,9 @@ bool applyMove(Board& board, Move move) {
         return true;
     }
     else {
+
         Position pos { moveToPos(move) };
-        if ( board.possible(pos, board.currentPlayer())) {
+        if ( board.possible(pos, board.currentPlayer()) && board.pegOwner(pos) == 0) {
             board.takePeg(pos);
             return true;
         }
