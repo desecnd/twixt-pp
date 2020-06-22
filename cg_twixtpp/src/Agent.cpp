@@ -26,6 +26,7 @@ namespace agent {
         Position bestPosition { -1, -1 };
 
         std::vector<Position> positions { boardMoveOrganizer_.getAvailablePositions(board) };
+
         for ( Position currentPosition : positions ) {
             Board newBoard(board);
             newBoard.takePeg(currentPosition);

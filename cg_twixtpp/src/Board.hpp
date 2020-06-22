@@ -22,13 +22,14 @@ private:
     int index(Position pos) const { 
         return pos.row() * kCols + pos.col(); 
     }
-    int opponent(int player) const { 
-        return 3 - player; 
-    }
 
     void dfs(std::vector<std::vector<int>>& vis, Position pos, int player) const;
 
 public:
+
+    int opponent(int player) const { 
+        return 3 - player; 
+    }
 
     Board() = default;
 
