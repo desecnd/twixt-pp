@@ -20,7 +20,7 @@ public:
         return Position(row_ + rhs.row_, col_ + rhs.col_);
     }
 
-    constexpr Position &operator-=(const Position &rhs) noexcept { 
+    constexpr Position& operator-=(const Position &rhs) noexcept { 
         row_ -= rhs.row_; 
         col_ -= rhs.col_; 
         return *this; 
@@ -28,6 +28,16 @@ public:
 
     constexpr Position operator-(const Position &rhs) const noexcept { 
         return Position(row_ - rhs.row_, col_ - rhs.col_);
+    }
+
+    constexpr Position& operator*=(int x) noexcept { 
+        row_ *= x;
+        col_ *= x;
+        return *this;
+    }
+
+    constexpr Position operator*(int x) const noexcept { 
+        return Position(row_ * x, col_ * x);
     }
 
     constexpr bool operator==(const Position &rhs) const noexcept {
