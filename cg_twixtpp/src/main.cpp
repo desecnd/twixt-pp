@@ -23,27 +23,5 @@ int main() {
     Agent myAgent{ rng };
     Human me{ };
 
-    Position p(2, 5);
-    // std::cout << p << " " << posToMove(p) << " " << moveToPos(posToMove(p)) << "n";
-
-    Board board;
-
-    /*
-    for (int directionInt = 0; directionInt < DIRECTIONS; directionInt++) {
-        Direction direction { static_cast<Direction>(directionInt) };
-        std::cout << "Direction: " << directionInt << "\n";
-        for (const Link& link : board.collisionTable_.collisions(direction)) {
-            std::cout << link.position << " " << static_cast<int>(link.direction) << "\n";
-        }
-    }
-    */
-
     return judge.playGame(me, myAgent, true);
-
-    // std::cout << boardHasher.calculateBoardHash(board) << "\n";
-    /*
-    for (const Link& link : CT.collisions(Direction::right) ) {
-        std::cout << link.position << "\n";
-    }
-    */
 }
