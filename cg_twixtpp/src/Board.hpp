@@ -73,7 +73,7 @@ public:
         return true;
     }
 
-    int setPlayer(int player) { currentPlayer_ = player; }
+    void setPlayer(int player) { currentPlayer_ = player; }
 
     int currentPlayer() const { return currentPlayer_; }
     void takePeg(Position pos, bool noSwap = false);
