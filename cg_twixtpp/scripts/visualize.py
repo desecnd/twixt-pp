@@ -130,13 +130,13 @@ class GraphicTwixTPP():
         gridPos = [event.x, event.y]
         boardPos = self.gridToBoardPosition(gridPos)
         if not self.gameEnded and boardPos:
-            self.sendMove(self.posToMove(boardPos))
 
             if self.processHandle.poll() != None:
                 winner = self.processHandle.poll()
                 self.gameEnded = True
                 print("Player", winner, "wins!")
             else:
+                self.sendMove(self.posToMove(boardPos))
                 self.getBoard()
                 self.drawBoard()
 
