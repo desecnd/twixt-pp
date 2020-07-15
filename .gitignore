@@ -2,6 +2,5 @@
 *.code-workspace
 .vscode
 __pycache__
-!*.py
-!*.h
-!*.cpp
+/build*
+/imgui.ini

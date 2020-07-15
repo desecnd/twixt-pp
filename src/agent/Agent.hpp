@@ -1,9 +1,9 @@
 #pragma once
 
-#include "Player.hpp"
-#include "BoardHasher.hpp"
-#include "BoardEvaluator.hpp"
-#include "BoardMoveOrganizer.hpp"
+#include "game/Player.hpp"
+#include "Hasher.hpp"
+#include "Evaluator.hpp"
+#include "MoveOrganizer.hpp"
 
 #include <unordered_map>
 #include <random>
@@ -13,16 +13,16 @@ namespace agent {
     private:
         int perspective_;
         Board board_;
-        BoardHasher boardHasher_;
-        BoardEvaluator boardEvaluator_;
-        BoardMoveOrganizer boardMoveOrganizer_;
+        Hasher hasher_;
+        Evaluator evaluator_;
+        MoveOrganizer moveOrganizer_;
         std::unordered_map<Hash, Score> transpositionTable_;
 
         Score evaluateAndRemember(const Board& board);
         std::pair<Score, Position> ABNegamax(Board board, int maxDepth, int depth, Score a, Score b, int color);
     public:
-        Agent(std::mt19937_64& rng) : perspective_{}, board_{}, boardHasher_{rng}, 
-            boardEvaluator_{}, boardMoveOrganizer_{}, transpositionTable_{} {}
+        Agent(std::mt19937_64& rng) : perspective_{}, board_{}, hasher_{rng}, 
+            evaluator_{}, moveOrganizer_{}, transpositionTable_{} {}
 
         void setPerspective(int player) { perspective_ = (player == 1 ? 1 : -1); }
         Move getMove(const Board& board);

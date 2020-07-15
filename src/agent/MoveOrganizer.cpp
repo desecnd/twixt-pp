@@ -1,7 +1,7 @@
-#include "BoardMoveOrganizer.hpp"
+#include "MoveOrganizer.hpp"
 
 namespace agent {
-    std::vector<Position> BoardMoveOrganizer::getAvailablePositions(const Board& board) {
+    std::vector<Position> MoveOrganizer::getAvailablePositions(const Board& board) {
         std::vector<Position> empty;
         std::swap(empty, positions);
 
@@ -32,7 +32,7 @@ namespace agent {
         return positions;
     }
 
-    void BoardMoveOrganizer::appendCrossMoves(const Board& board, int player, int depth) {
+    void MoveOrganizer::appendCrossMoves(const Board& board, int player, int depth) {
         Position up(-1, 0);
         Position left(0, -1);
 
@@ -68,7 +68,7 @@ namespace agent {
         
 
 
-    void BoardMoveOrganizer::appendKnightMoves(const Board& board, int player) {
+    void MoveOrganizer::appendKnightMoves(const Board& board, int player) {
         for (int r = 0; r < Board::kRows; r++) 
         for (int c = 0; c < Board::kCols; c++) {
             Position pos { r, c };
@@ -88,7 +88,7 @@ namespace agent {
         }
     }
 
-    void BoardMoveOrganizer::appendAll(const Board& board, int player) {
+    void MoveOrganizer::appendAll(const Board& board, int player) {
         int cBias { player == 1 ? 1 : 0 };
         int rBias { player == 2 ? 1 : 0 };
 

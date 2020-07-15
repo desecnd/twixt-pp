@@ -5,7 +5,7 @@
 
 class Human : public Player {
 private:
-    agent::BoardEvaluator be_{};
+    agent::Evaluator be_{};
 public:
     void setPerspective(int player) {}
     Move getMove(const Board& board) {

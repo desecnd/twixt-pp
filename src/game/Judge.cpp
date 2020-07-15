@@ -1,5 +1,5 @@
 #include "Judge.hpp"
-#include "BoardEvaluator.hpp"
+#include "agent/Evaluator.hpp"
 
 int Judge::playGame(Player& p1, Player& p2, bool debug = false) {
     Move m1 { "FIRST" };

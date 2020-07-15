@@ -7,10 +7,10 @@ namespace agent {
     int calculatedLeafs = 0;
 
     Score Agent::evaluateAndRemember(const Board& board) {
-        Hash boardHash { boardHasher_.calculateBoardHash(board) };
+        Hash boardHash { hasher_.calculateBoardHash(board) };
 
         if ( transpositionTable_.find(boardHash) == transpositionTable_.end() ) {
-            Score boardScore { boardEvaluator_.evaluateBoardScore(board) };
+            Score boardScore { evaluator_.evaluateBoardScore(board) };
             transpositionTable_[boardHash] = boardScore; 
         }
         return transpositionTable_[boardHash];
@@ -25,7 +25,7 @@ namespace agent {
         Score bestScore = -1e9;
         Position bestPosition { -1, -1 };
 
-        std::vector<Position> positions { boardMoveOrganizer_.getAvailablePositions(board) };
+        std::vector<Position> positions { moveOrganizer_.getAvailablePositions(board) };
 
         for ( Position currentPosition : positions ) {
             Board newBoard(board);

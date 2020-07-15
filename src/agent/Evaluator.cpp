@@ -1,7 +1,7 @@
-#include "BoardEvaluator.hpp"
+#include "Evaluator.hpp"
 
 namespace agent {
-    std::vector<std::vector<int>> BoardEvaluator::calculateDistance(const Board& board, int testingPlayer) {
+    std::vector<std::vector<int>> Evaluator::calculateDistance(const Board& board, int testingPlayer) {
         const int inf = 1e9;
 
         std::queue<Position> Q;
@@ -38,7 +38,7 @@ namespace agent {
 
         return dist;
     }
-    int BoardEvaluator::simulateExploitation(Board board) {
+    int Evaluator::simulateExploitation(Board board) {
         // std::cerr << "Current PLayer: " << board.currentPlayer() << ";";
         std::queue<Position> Q;
 
@@ -84,7 +84,7 @@ namespace agent {
         return board.isGameOver();
     }
 
-    std::vector<std::vector<int>> BoardEvaluator::getEdgeWinners(Board board) {
+    std::vector<std::vector<int>> Evaluator::getEdgeWinners(Board board) {
         std::queue<Position> Q;
 
         for (int r = 0; r < Board::kRows; r++) 
@@ -133,7 +133,7 @@ namespace agent {
         return winner;
     }
 
-    void BoardEvaluator::dfs(const Board& board, std::vector<std::vector<int>>& vis, Position pos, int player) {
+    void Evaluator::dfs(const Board& board, std::vector<std::vector<int>>& vis, Position pos, int player) {
         vis[pos.row()][pos.col()] = 1;
 
         for (int directionInt = 0; directionInt < DIRECTIONS; directionInt++) {
@@ -146,7 +146,7 @@ namespace agent {
         }
     }
 
-    int BoardEvaluator::countConnectedComponents(const Board& board, int testingPlayer) {
+    int Evaluator::countConnectedComponents(const Board& board, int testingPlayer) {
         std::vector<std::vector<int>> vis(Board::kRows, std::vector<int>(Board::kCols, 0));
         int cc = 0;
 
@@ -162,7 +162,7 @@ namespace agent {
         return cc;
     }
 
-    Score BoardEvaluator::edgeWinnersHeuristic(const Board& board) {
+    Score Evaluator::edgeWinnersHeuristic(const Board& board) {
         auto winner = getEdgeWinners(board);
 
         int add{ 0 };
@@ -214,7 +214,7 @@ namespace agent {
         return out;
     }
 
-    Score BoardEvaluator::connectedComponentsHeuristic(const Board& board) {
+    Score Evaluator::connectedComponentsHeuristic(const Board& board) {
         int ccp1 = countConnectedComponents(board, 1);
         int ccp2 = countConnectedComponents(board, 2);
         
@@ -223,7 +223,7 @@ namespace agent {
         return p2 - p1;
     }
 
-    Score BoardEvaluator::edgeDistanceHeuristic(const Board& board) {
+    Score Evaluator::edgeDistanceHeuristic(const Board& board) {
         auto distP1 = calculateDistance(board, 1);
         auto distP2 = calculateDistance(board, 2);
 
@@ -247,12 +247,12 @@ namespace agent {
 
     }
 
-    Score BoardEvaluator::exploitationHeuristic(const Board& board) {
+    Score Evaluator::exploitationHeuristic(const Board& board) {
         int winner = simulateExploitation(board);
         return static_cast<Score>(winner == 1 ? 1 : -1);
     }
 
-    Score BoardEvaluator::evaluateBoardScore(const Board& board) {
+    Score Evaluator::evaluateBoardScore(const Board& board) {
         // Score edgeHeur { edgeDistanceHeuristic(board) };
         int gameOver = board.isGameOver();
 

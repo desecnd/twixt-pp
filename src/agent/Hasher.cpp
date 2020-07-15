@@ -1,8 +1,8 @@
-#include "BoardHasher.hpp"
+#include "Hasher.hpp"
 
 namespace agent {
 
-    Hash BoardHasher::calculateBoardHash(const Board& board) {
+    Hash Hasher::calculateBoardHash(const Board& board) {
         Hash hash{ 0 };
 
         for (int r = 0; r < Board::kRows; r++) 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Position.hpp"
-#include "Board.hpp"
+#include "board/Position.hpp"
+#include "board/Board.hpp"
 
 #include <string>
 

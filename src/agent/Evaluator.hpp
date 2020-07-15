@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Board.hpp"
+#include "board/Board.hpp"
 
 namespace agent {
     using Score = float; 
 
-    class BoardEvaluator {
+    class Evaluator {
     public:
         Score evaluateBoardScore(const Board& board);
         Score edgeDistanceHeuristic(const Board& board);

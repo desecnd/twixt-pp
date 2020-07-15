@@ -1,11 +1,11 @@
 #pragma once
 
-#include "Board.hpp"
+#include "board/Board.hpp"
 
 #include <vector>
 
 namespace agent {
-    class BoardMoveOrganizer {
+    class MoveOrganizer {
         std::vector<std::vector<int>> vis;
         std::vector<Position> positions;
 
@@ -14,7 +14,7 @@ namespace agent {
         void appendAll(const Board& board, int player);
 
     public:
-        BoardMoveOrganizer() : vis(Board::kRows, std::vector<int>(Board::kCols, 0)) {}
+        MoveOrganizer() : vis(Board::kRows, std::vector<int>(Board::kCols, 0)) {}
         std::vector<Position> getAvailablePositions(const Board& board);
     };
 }
