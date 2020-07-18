@@ -4,8 +4,6 @@
 #include "Move.hpp"
 
 class Human : public Player {
-private:
-    agent::Evaluator be_{};
 public:
     void setPerspective(int player) {}
     Move getMove(const Board& board) {
