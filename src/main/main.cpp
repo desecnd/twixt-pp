@@ -1,7 +1,5 @@
 #include "board/Board.hpp"
-#include "game/Judge.hpp"
-#include "agent/Agent.hpp"
-#include "game/Human.hpp"
+#include "game/Game.hpp"
 
 #include "imgui.h"
 #include "imgui-SFML.h"
@@ -14,25 +12,29 @@
 #include <iostream>
 #include <random>
 
+
+void nothing();
+
+
 int main() {
-    using namespace agent;
+    Game game{};
+    
+    game.playGame();
+}
 
-    std::mt19937_64 rng{ 123 };
-
-    Judge judge{};
-    Agent myAgent{ rng };
-    Human me{ };
-
-    // return judge.playGame(me, myAgent, true);
-
-    sf::RenderWindow window(sf::VideoMode(640, 480), "ImGui + SFML = <3");
+void nothing() {
+    sf::RenderWindow window(sf::VideoMode(640, 480), "Twixt-PP");
     window.setFramerateLimit(60);
     ImGui::SFML::Init(window);
 
     sf::CircleShape shape(100.f);
     shape.setFillColor(sf::Color::Green);
 
+    render::Painter painter;
+    Board board;
+
     sf::Clock deltaClock;
+
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
@@ -43,17 +45,15 @@ int main() {
             }
         }
 
-        ImGui::SFML::Update(window, deltaClock.restart());
-
-        ImGui::Begin("Hello, world!");
-        ImGui::Button("Look at this pretty button");
-        ImGui::End();
-
         window.clear();
         window.draw(shape);
         ImGui::SFML::Render(window);
+
+        painter.drawBoard(window, board);
         window.display();
     }
 
     ImGui::SFML::Shutdown();
+
+
 }
