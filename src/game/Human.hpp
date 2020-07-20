@@ -6,7 +6,7 @@
 class Human : public Player {
 public:
     void setPerspective(int player) {}
-    Move getMove(const Board& board) {
+    Move getMove(Board board) {
         printBoard(std::cout, board);
         // be_.evaluateBoardScore(board);
         Move myMove;
