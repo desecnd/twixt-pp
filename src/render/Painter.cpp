@@ -47,7 +47,8 @@ namespace render {
         for (int col = 0; col < Board::kCols; col++) {
             Position pos { row, col };
 
-            sf::CircleShape peg(pegRadius, 30ul);
+            sf::CircleShape peg(pegRadius * (board.pegOwner(pos) == 0 ? 1.0 : 1.5 ) , 30ul);
+
             peg.setOrigin(peg.getRadius(), peg.getRadius());
             peg.setFillColor(colors[board.pegOwner(pos)]);
             sf::Vector2f newPos { (col + 1) * horizontalDistance, (row + 1) * verticalDistance };
@@ -70,12 +71,7 @@ namespace render {
                     sf::Vector2f firstPos { (pos.col() + 1) * horizontalDistance, (pos.row() + 1) * verticalDistance };
                     sf::Vector2f secondPos { (other.col() + 1) * horizontalDistance, (other.row() + 1) * verticalDistance };
 
-                    sf::VertexArray line(sf::LinesStrip, 2);
-                    line[0].position = firstPos;
-                    line[1].position = secondPos;
-                    line[1].color = line[0].color = colors[pegOwner];
-
-                    window.draw(line);
+                    window.draw(sfLine(firstPos, secondPos, colors[pegOwner], lineThickness));
                 }
             }
         }

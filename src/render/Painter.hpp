@@ -37,7 +37,7 @@ namespace render {
     class Painter {
     private:
         const std::array<sf::Color, 3> colors {{ 
-            sf::Color(255, 204, 0), sf::Color(204, 0, 0), sf::Color(51, 51, 255)
+            sf::Color(204, 153, 0), sf::Color(204, 0, 0), sf::Color(51, 51, 255)
         }};
 
         sf::Vector2f calcBoardSize(const sf::Vector2u& windowSize) const { 
