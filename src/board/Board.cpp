@@ -51,6 +51,38 @@ int Board::isGameOver() const {
     return 0;
 }
 
+int Board::isGameSealed() const {
+
+    {  // First Player
+        std::vector<std::vector<int>> vis(kRows, std::vector<int>(kCols));
+
+        for (int row = 0; row < 2; row++)
+        for (int col = 1; col < kCols - 1; col++)
+            if ( pegOwner(Position(row, col)) == 1 )
+                dfs(vis, Position(row, col), 1);
+        
+        for (int row = kRows - 2; row < kRows; row++)
+        for (int col = 1; col < kCols - 1; col++)
+            if ( vis[row][col] ) return 1;
+    }
+
+    {   // Second Player
+
+        std::vector<std::vector<int>> vis(kRows, std::vector<int>(kCols));
+
+        for (int row = 1; row < kRows - 1; row++)
+        for (int col = 0; col < 2; col++)
+            if ( pegOwner(Position(row, col)) == 1 )
+                dfs(vis, Position(row, col), 2);
+            
+        for (int row = 1; row < kRows; row++)
+        for (int col = kCols - 2; col < kCols; col++)
+            if ( vis[row][col] ) return 2;
+    }
+
+    return 0;
+}
+
 void Board::debug() {
     for (int r = 0; r < kRows; r++) {
         for (int c = 0; c < kCols; c++) {

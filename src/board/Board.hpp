@@ -78,6 +78,7 @@ public:
     int currentPlayer() const { return currentPlayer_; }
     void takePeg(Position pos, bool noSwap = false);
     int isGameOver() const;
+    int isGameSealed() const;
     void debug();
 };
 
