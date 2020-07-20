@@ -51,7 +51,7 @@ namespace agent {
         return std::make_pair(bestScore, bestPosition);
     }
 
-    Move Agent::getMove(const Board& board) {
+    Move Agent::getMove(Board board) {
         Score bestScore;
         Position bestPosition;
         calculatedLeafs = 0;

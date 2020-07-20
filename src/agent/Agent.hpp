@@ -25,7 +25,8 @@ namespace agent {
             evaluator_{}, moveOrganizer_{}, transpositionTable_{} {}
 
         void setPerspective(int player) { perspective_ = (player == 1 ? 1 : -1); }
-        Move getMove(const Board& board);
+        int perspective() const { return (perspective_ == 1 ? 1 : 2);  }
+        Move getMove(Board board);
     };
 }
 

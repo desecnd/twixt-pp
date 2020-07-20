@@ -256,12 +256,16 @@ namespace agent {
         // Score edgeHeur { edgeDistanceHeuristic(board) };
         int gameOver = board.isGameOver();
 
-        if ( gameOver == 1 ) return 1e9;
-        else if ( gameOver == 2 ) return -1e9; 
+        if ( gameOver == 1 ) return 1e9 - 1;
+        else if ( gameOver == 2 ) return -1e9 + 1; 
         else { 
+            int sureWinner = board.isGameSealed();
+            if ( sureWinner == 1 ) return 1e4;
+            else if ( sureWinner == 2 ) return -1e4;
+
             Score expHeur { exploitationHeuristic(board) };
             Score ccHeur { connectedComponentsHeuristic(board) };
-            Score sum = expHeur * 100 + ccHeur;
+            Score sum = expHeur * 100 + ccHeur * 20;
             return sum;
         }
     }
