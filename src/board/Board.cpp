@@ -32,21 +32,27 @@ void Board::dfs(std::vector<std::vector<int>>& vis, Position pos, int player) co
 }
 
 int Board::isGameOver() const {
-    std::vector<std::vector<int>> vis(kRows, std::vector<int>(kCols, 0));
+    {
+        std::vector<std::vector<int>> vis(kRows, std::vector<int>(kCols, 0));
 
-    for (int col = 1; col < kCols - 1; col++)
-        if ( pegOwner(Position(0, col)) == 1 ) 
-            dfs(vis, Position(0, col), 1);
+        for (int col = 1; col < kCols - 1; col++)
+            if ( pegOwner(Position(0, col)) == 1 ) 
+                dfs(vis, Position(0, col), 1);
 
-    for (int col = 1; col < kCols - 1; col++)
-        if  ( vis[kRows - 1][col] ) return 1;
+        for (int col = 1; col < kCols - 1; col++)
+            if  ( vis[kRows - 1][col] ) return 1;
+    }
 
-    for (int row = 1; row < kRows - 1; row++)
-        if ( pegOwner(Position(row, 0)) == 2 ) 
-            dfs(vis, Position(row, 0), 2);
+    {
+        std::vector<std::vector<int>> vis(kRows, std::vector<int>(kCols, 0));
 
-    for (int row = 1; row < kRows - 1; row++)
-        if  ( vis[row][kCols - 1] ) return 2;
+        for (int row = 1; row < kRows - 1; row++)
+            if ( pegOwner(Position(row, 0)) == 2 ) 
+                dfs(vis, Position(row, 0), 2);
+
+        for (int row = 1; row < kRows - 1; row++)
+            if  ( vis[row][kCols - 1] ) return 2;
+    }
 
     return 0;
 }
