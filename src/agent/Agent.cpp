@@ -3,9 +3,6 @@
 #include <utility>
 
 namespace agent {
-
-    int calculatedLeafs = 0;
-
     Score Agent::evaluateAndRemember(const Board& board) {
         Hash boardHash { hasher_.calculateBoardHash(board) };
 
@@ -13,13 +10,35 @@ namespace agent {
             Score boardScore { evaluator_.evaluateBoardScore(board) };
             transpositionTable_[boardHash] = boardScore; 
         }
+        else {
+            myStats_.transpositionHits++;
+        }
+
         return transpositionTable_[boardHash];
+    }
+
+    void Agent::fillMyStats(Board board) {
+        std::vector<Position> positions { moveOrganizer_.getAvailablePositions(board) };
+
+        for (int i = 0; i < positions.size(); i++) {
+            Board newBoard(board);
+
+            Position currentPosition = positions[i];
+            newBoard.takePeg(currentPosition);
+
+            Score moveScore = evaluateAndRemember(newBoard);
+            myStats_.positionOrder[currentPosition.row()][currentPosition.col()] = i;
+            myStats_.positionScore[currentPosition.row()][currentPosition.col()] = moveScore;
+
+            myStats_.bestScore = std::max(myStats_.bestScore, moveScore);
+            myStats_.worstScore = std::min(myStats_.worstScore, moveScore);
+        }
     }
 
     std::pair<Score, Position> Agent::ABNegamax(Board board, int maxDepth, int depth, Score alpha, Score beta, int color) {
         if ( depth == maxDepth || board.isGameOver() ) {
-            calculatedLeafs++;
-            return std::make_pair( color * evaluateAndRemember(board), Position(-1,-1)); 
+            myStats_.calculatedLeafs++;
+            return {color * evaluateAndRemember(board), {-1, -1}}; 
         }
 
         Score bestScore = -1e9;
@@ -31,10 +50,7 @@ namespace agent {
             Board newBoard(board);
             newBoard.takePeg(currentPosition);
 
-            Position tempPos; 
-            Score recursedScore;
-
-            std::tie(recursedScore, tempPos) = ABNegamax(newBoard, 
+            auto[recursedScore, tempPos] = ABNegamax(newBoard, 
                     maxDepth, depth + 1, -beta, -std::max(alpha, bestScore), -color);
 
             Score currentScore = -recursedScore;
@@ -48,15 +64,15 @@ namespace agent {
                 break;
         }
 
-        return std::make_pair(bestScore, bestPosition);
+        return {bestScore, bestPosition};
     }
 
     Move Agent::getMove(Board board) {
-        Score bestScore;
-        Position bestPosition;
-        calculatedLeafs = 0;
-        std::tie(bestScore, bestPosition) = ABNegamax(board, 2, 0, -1e9, 1e9, perspective_);
-        std::cerr << "AGENT{ " << bestScore << ", " << bestPosition << " }, calcLeaf = " << calculatedLeafs << ";";
+        Stats newStats;
+        myStats_ = newStats;
+        auto[bestScore, bestPosition] = ABNegamax(board, 2, 0, -1e9, 1e9, perspective_);
+        fillMyStats(board);
         return posToMove(bestPosition);
     }
+
 }
