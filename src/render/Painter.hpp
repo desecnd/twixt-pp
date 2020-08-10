@@ -36,9 +36,6 @@ private:
 namespace render {
     class Painter {
     private:
-        const std::array<sf::Color, 3> colors {{ 
-            sf::Color(204, 153, 0), sf::Color(204, 0, 0), sf::Color(51, 51, 255)
-        }};
 
         sf::Vector2f calcBoardSize(const sf::Vector2u& windowSize) const { 
             int minValue = std::min(windowSize.x, windowSize.y);
@@ -56,9 +53,12 @@ namespace render {
         }
 
     public:
+        const std::array<sf::Color, 3> colors {{ 
+            sf::Color(204, 153, 0), sf::Color(204, 0, 0), sf::Color(51, 51, 255)
+        }};
+
         Painter() = default;
         void drawBoard(sf::RenderWindow& window, const Board& board);
-        void drawDebug(sf::RenderWindow& window, const agent::Agent& agent);
         Position getLogicalPosition(const sf::RenderWindow& window, const sf::Vector2i& position);
     };
 

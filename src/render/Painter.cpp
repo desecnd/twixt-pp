@@ -77,12 +77,6 @@ namespace render {
         }
     }
 
-    void Painter::drawDebug(sf::RenderWindow& window, const agent::Agent& agent) { 
-        ImGui::Begin("New Panel");
-        ImGui::Button("Pretty Button");
-        ImGui::End();
-        ImGui::SFML::Render(window);
-    }
 
     Position Painter::getLogicalPosition(const sf::RenderWindow& window, const sf::Vector2i& pos) {
         auto boardSize = calcBoardSize(window.getSize());
