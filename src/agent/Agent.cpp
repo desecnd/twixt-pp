@@ -26,12 +26,14 @@ namespace agent {
             Position currentPosition = positions[i];
             newBoard.takePeg(currentPosition);
 
-            Score moveScore = evaluateAndRemember(newBoard);
+            Score moveScore = perspective_ * evaluateAndRemember(newBoard);
             myStats_.positionOrder[currentPosition.row()][currentPosition.col()] = i;
             myStats_.positionScore[currentPosition.row()][currentPosition.col()] = moveScore;
 
-            myStats_.bestScore = std::max(myStats_.bestScore, moveScore);
-            myStats_.worstScore = std::min(myStats_.worstScore, moveScore);
+            if ( moveScore > -kSureWin && moveScore < kSureWin ) {
+                myStats_.bestScore = std::max(myStats_.bestScore, moveScore);
+                myStats_.worstScore = std::min(myStats_.worstScore, moveScore);
+            }
         }
     }
 
@@ -41,23 +43,34 @@ namespace agent {
             return {color * evaluateAndRemember(board), {-1, -1}}; 
         }
 
-        Score bestScore = -1e9;
+        Score bestScore = -kInf;
         Position bestPosition { -1, -1 };
 
         std::vector<Position> positions { moveOrganizer_.getAvailablePositions(board) };
 
-        for ( Position currentPosition : positions ) {
+        for ( int i = 0; i < positions.size(); i++ ) {
             Board newBoard(board);
-            newBoard.takePeg(currentPosition);
+            newBoard.takePeg(positions[i]);
+
+
 
             auto[recursedScore, tempPos] = ABNegamax(newBoard, 
                     maxDepth, depth + 1, -beta, -std::max(alpha, bestScore), -color);
 
             Score currentScore = -recursedScore;
 
+            if ( depth == 0 ) {
+                myStats_.positionOrder[positions[i].row()][positions[i].col()] = i;
+                myStats_.positionScore[positions[i].row()][positions[i].col()] = currentScore;
+                if ( currentScore > -kSureWin && currentScore < kSureWin ) {
+                    myStats_.bestScore = std::max(myStats_.bestScore, currentScore);
+                    myStats_.worstScore = std::min(myStats_.worstScore, currentScore);
+                }
+            }
+
             if ( currentScore > bestScore ) {
                 bestScore = currentScore;
-                bestPosition = currentPosition;
+                bestPosition = positions[i];
             }
 
             if ( bestScore >= beta ) 
@@ -70,8 +83,8 @@ namespace agent {
     Move Agent::getMove(Board board) {
         Stats newStats;
         myStats_ = newStats;
-        auto[bestScore, bestPosition] = ABNegamax(board, 2, 0, -1e9, 1e9, perspective_);
-        fillMyStats(board);
+        auto[bestScore, bestPosition] = ABNegamax(board, 2, 0, -kInf, kInf, perspective_);
+        // fillMyStats(board);
         return posToMove(bestPosition);
     }
 

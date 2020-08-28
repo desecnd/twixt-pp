@@ -18,11 +18,11 @@ namespace agent {
         Score positionScore[Board::kRows][Board::kCols];
         int positionOrder[Board::kRows][Board::kCols];
 
-        Stats() : calculatedLeafs(0), transpositionHits(0), bestScore(-1e9), worstScore(1e9) {
+        Stats() : calculatedLeafs(0), transpositionHits(0), bestScore(-kInf), worstScore(kInf) {
             for (int row = 0; row < Board::kRows; row++) 
             for (int col = 0; col < Board::kCols; col++) {
                     positionOrder[row][col] = -1;
-                    positionScore[row][col] = -1e9;
+                    positionScore[row][col] = -kInf;
             } 
         }
     };
