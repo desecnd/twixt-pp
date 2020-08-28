@@ -3,7 +3,11 @@
 #include "board/Board.hpp"
 
 namespace agent {
-    using Score = float; 
+    using Score = int; 
+
+    const Score kInf = 1e9;
+    const Score kWin = 1e8;
+    const Score kSureWin = 1e7;
 
     class Evaluator {
     public:

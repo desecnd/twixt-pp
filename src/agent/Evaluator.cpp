@@ -2,10 +2,9 @@
 
 namespace agent {
     std::vector<std::vector<int>> Evaluator::calculateDistance(const Board& board, int testingPlayer) {
-        const int inf = 1e9;
 
         std::queue<Position> Q;
-        std::vector<std::vector<int>> dist(Board::kRows, std::vector<int>(Board::kCols, inf));
+        std::vector<std::vector<int>> dist(Board::kRows, std::vector<int>(Board::kCols, kInf));
 
         for (int r = 0; r < Board::kRows; r++) 
         for (int c = 0; c < Board::kCols; c++) {
@@ -28,7 +27,7 @@ namespace agent {
 
                 if ( board.possible(u, testingPlayer) 
                     && board.linkPossible(v, direction, testingPlayer) 
-                        && dist[u.row()][u.col()] == inf ) {
+                        && dist[u.row()][u.col()] == kInf ) {
 
                     Q.push(u);
                     dist[u.row()][u.col()] = dist[v.row()][v.col()] + 1;
@@ -227,7 +226,7 @@ namespace agent {
         auto distP1 = calculateDistance(board, 1);
         auto distP2 = calculateDistance(board, 2);
 
-        Score score { 0.0 };
+        Score score { 0 };
         for (int r = 1; r < Board::kRows - 1; r++ ) {
             float diff1 = distP1[r][0] - distP2[r][0];
             float diff2 = distP1[r][Board::kCols - 1] - distP2[r][Board::kCols - 1];
@@ -256,12 +255,12 @@ namespace agent {
         // Score edgeHeur { edgeDistanceHeuristic(board) };
         int gameOver = board.isGameOver();
 
-        if ( gameOver == 1 ) return 1e5;
-        else if ( gameOver == 2 ) return -1e5; 
+        if ( gameOver == 1 ) return kWin;
+        else if ( gameOver == 2 ) return kWin; 
         else { 
             int sureWinner = board.isGameSealed();
-            if ( sureWinner == 1 ) return 1e3;
-            else if ( sureWinner == 2 ) return -1e3;
+            if ( sureWinner == 1 ) return kSureWin;
+            else if ( sureWinner == 2 ) return -kSureWin;
 
             Score expHeur { exploitationHeuristic(board) };
             Score ccHeur { connectedComponentsHeuristic(board) };
