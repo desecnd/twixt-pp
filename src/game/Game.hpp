@@ -27,16 +27,17 @@ private:
     sf::Clock clock_;
     render::Painter painter_;
 
-    int player_perspective_; 
+    Position cursor_;
+    std::vector<agent::Stats> agentStats_;
 
-    agent::Stats agentStats;
+    int player_perspective_; 
 
     std::mutex board_mutex_; 
 public:
     Game() : rng_(), board_(), history_{ board_ }, agent_( rng_ ), 
         //window_(sf::VideoMode(640, 480), "Twixt-PP"),
         window_(sf::VideoMode(1920, 1080), "Twixt-PP"), 
-        clock_(), painter_()
+        clock_(), painter_(), cursor_(), agentStats_{agent::Stats()}, player_perspective_(1)
         {
             window_.setFramerateLimit(30);
             ImGui::SFML::Init(window_);
@@ -55,5 +56,6 @@ public:
     void draw();
     void drawImgui();
 
+    void renderGameEditor();
     void renderAgent();
 };
