@@ -256,7 +256,7 @@ namespace agent {
         int gameOver = board.isGameOver();
 
         if ( gameOver == 1 ) return kWin;
-        else if ( gameOver == 2 ) return kWin; 
+        else if ( gameOver == 2 ) return -kWin; 
         else { 
             int sureWinner = board.isGameSealed();
             if ( sureWinner == 1 ) return kSureWin;

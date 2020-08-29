@@ -20,8 +20,6 @@ void Game::draw() {
 // Demonstrate using the low-level ImDrawList to draw custom shapes.
 void Game::renderAgent()
 {
-
-
     agent::Stats lastStats;
     if ( agentStats_.size() > 0 ) lastStats = agentStats_.back();
 
@@ -68,121 +66,153 @@ void Game::renderAgent()
                 ImGui::ColorEdit4("Determined Loose", &col_neg_sure_win.x);
             }
 
-            ImGui::Columns(2);
-            ImGui::Text("Fitness Heat Map");
-            for (int row = 0; row < Board::kRows; row++)
-            for (int col = 0; col < Board::kCols; col++)
-            {
-                int id = row * Board::kCols + col;
-                agent::Score score = lastStats.positionScore[row][col];
-                ImU32 color;
+            if (ImGui::CollapsingHeader("Heat Maps")) {
+
+                ImGui::Columns(2);
+                ImGui::Text("Fitness Heat Map");
+                for (int row = 0; row < Board::kRows; row++)
+                for (int col = 0; col < Board::kCols; col++)
+                {
+                    int id = row * Board::kCols + col;
+                    agent::Score score = lastStats.positionScore[row][col];
+                    ImU32 color;
 
 
-                switch ( score ) {
-                    case agent::kInf: color = ImGui::GetColorU32(col_inf); break;
-                    case -agent::kInf: color = ImGui::GetColorU32(col_neg_inf); break;
-                    case agent::kWin: color = ImGui::GetColorU32(col_win); break;
-                    case -agent::kWin: color = ImGui::GetColorU32(col_neg_win); break;
-                    case agent::kSureWin: color = ImGui::GetColorU32(col_sure_win); break;
-                    case -agent::kSureWin: color = ImGui::GetColorU32(col_neg_sure_win); break;
-                    default: {
-                        float width = lastStats.bestScore - lastStats.worstScore;
-                        float percent = float(score - lastStats.worstScore) / width;
+                    switch ( score ) {
+                        case agent::kInf: color = ImGui::GetColorU32(col_inf); break;
+                        case -agent::kInf: color = ImGui::GetColorU32(col_neg_inf); break;
+                        case agent::kWin: color = ImGui::GetColorU32(col_win); break;
+                        case -agent::kWin: color = ImGui::GetColorU32(col_neg_win); break;
+                        case agent::kSureWin: color = ImGui::GetColorU32(col_sure_win); break;
+                        case -agent::kSureWin: color = ImGui::GetColorU32(col_neg_sure_win); break;
+                        default: {
+                            float width = lastStats.bestScore - lastStats.worstScore;
+                            float percent = float(score - lastStats.worstScore) / width;
 
-                        float r = col_bad.x + percent * (col_good.x - col_bad.x);
-                        float g = col_bad.y + percent * (col_good.y - col_bad.y);
-                        float b = col_bad.z + percent * (col_good.z - col_bad.z);
-                        color = ImGui::GetColorU32(ImVec4(r,g,b, alpha));
+                            float r = col_bad.x + percent * (col_good.x - col_bad.x);
+                            float g = col_bad.y + percent * (col_good.y - col_bad.y);
+                            float b = col_bad.z + percent * (col_good.z - col_bad.z);
+                            color = ImGui::GetColorU32(ImVec4(r,g,b, alpha));
+                        }
                     }
-                }
 
-                if (col > 0)
-                    ImGui::SameLine();
-                ImGui::PushID(id);
-                ImGui::PushStyleColor(ImGuiCol_Button, color);
-                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, color);
-                ImGui::PushStyleColor(ImGuiCol_ButtonActive, color); 
-                std::string label = posToMove({row, col});
-                ImGui::Button(label.c_str(), ImVec2(side_length, side_length));
-                ImGui::PopStyleColor(3);
-                ImGui::PopID();
-                
-                if (ImGui::IsItemHovered())
+                    if (col > 0)
+                        ImGui::SameLine();
+                    ImGui::PushID(id);
+                    ImGui::PushStyleColor(ImGuiCol_Button, color);
+                    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, color);
+                    ImGui::PushStyleColor(ImGuiCol_ButtonActive, color); 
+                    std::string label = posToMove({row, col});
+                    ImGui::Button(label.c_str(), ImVec2(side_length, side_length));
+                    ImGui::PopStyleColor(3);
+                    ImGui::PopID();
+                    
+                    if (ImGui::IsItemHovered())
+                    {
+                        ImGui::BeginTooltip();
+                        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+                        ImGui::TextUnformatted(("Move: " + posToMove({row, col})).c_str());
+                        ImGui::TextUnformatted(("Fitness: " + std::to_string(score)).c_str());
+                        ImGui::PopTextWrapPos();
+                        ImGui::EndTooltip();
+                    }
+                    
+                    /*
+                    draw_list->AddRectFilled(
+                        ImVec2(upper_left_x, upper_left_y),
+                        ImVec2(upper_left_x + side_length, upper_left_y + side_length), 
+                        color);
+                        */
+
+                }
+                // ImGui::NextColumn();
+
+                ImGui::NextColumn();
+                ImGui::Text("Move ordering");
+
+                for (int row = 0; row < Board::kRows; row++)
+                for (int col = 0; col < Board::kCols; col++)
                 {
-                    ImGui::BeginTooltip();
-                    ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-                    ImGui::TextUnformatted(("Move: " + posToMove({row, col})).c_str());
-                    ImGui::TextUnformatted(("Fitness: " + std::to_string(score)).c_str());
-                    ImGui::PopTextWrapPos();
-                    ImGui::EndTooltip();
+                    int id = row * Board::kCols + col;
+                    int place = lastStats.positionOrder[row][col];
+
+                    float a = 1.0f;
+
+                    if ( place == -1 ) a = 0.f;
+                    else a = 1.0f - float(place) / (Board::kCols * Board::kRows);
+
+                    ImVec4 col_vec(0.3f, 0.3f, 9.f, a);
+                    ImU32 color = ImGui::GetColorU32(col_vec);
+                    
+                    if (col > 0)
+                        ImGui::SameLine();
+                    ImGui::PushID(id);
+                    ImGui::PushStyleColor(ImGuiCol_Button, color);
+                    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, color);
+                    ImGui::PushStyleColor(ImGuiCol_ButtonActive, color); 
+                    std::string label = "";
+                    if ( place != -1 ) label = std::to_string(place);
+                    ImGui::Button(label.c_str(), ImVec2(side_length, side_length));
+                    ImGui::PopStyleColor(3);
+                    ImGui::PopID();
+                    
+                    if (ImGui::IsItemHovered())
+                    {
+                        ImGui::BeginTooltip();
+                        ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
+                        ImGui::TextUnformatted("xd");
+                        ImGui::PopTextWrapPos();
+                        ImGui::EndTooltip();
+                    } 
+
+
+
+                    /*
+                    draw_list->AddRectFilled(
+                        ImVec2(upper_left_x, upper_left_y),
+                        ImVec2(upper_left_x + side_length, upper_left_y + side_length), 
+                        color);
+                        */
+
                 }
                 
-                /*
-                draw_list->AddRectFilled(
-                    ImVec2(upper_left_x, upper_left_y),
-                    ImVec2(upper_left_x + side_length, upper_left_y + side_length), 
-                    color);
-                    */
-
+                // ImGui::NextColumn();
+                ImGui::Columns(1);
             }
-            // ImGui::NextColumn();
 
-            ImGui::NextColumn();
-            ImGui::Text("Move ordering");
+            if (ImGui::CollapsingHeader("Plots")) {
+                ImGui::Text("Score function plots");
+                int n = agentStats_.size() - 1;
 
-            for (int row = 0; row < Board::kRows; row++)
-            for (int col = 0; col < Board::kCols; col++)
-            {
-                int id = row * Board::kCols + col;
-                int place = lastStats.positionOrder[row][col];
+                ImVec2 plotSize(500, 100);
 
-                float a = 1.0f;
-
-                if ( place == -1 ) a = 0.f;
-                else a = 1.0f - float(place) / (Board::kCols * Board::kRows);
-
-                ImVec4 col_vec(0.3f, 0.3f, 9.f, a);
-                ImU32 color = ImGui::GetColorU32(col_vec);
-                
-                if (col > 0)
-                    ImGui::SameLine();
-                ImGui::PushID(id);
-                ImGui::PushStyleColor(ImGuiCol_Button, color);
-                ImGui::PushStyleColor(ImGuiCol_ButtonHovered, color);
-                ImGui::PushStyleColor(ImGuiCol_ButtonActive, color); 
-                std::string label = "";
-                if ( place != -1 ) label = std::to_string(place);
-                ImGui::Button(label.c_str(), ImVec2(side_length, side_length));
-                ImGui::PopStyleColor(3);
-                ImGui::PopID();
-                
-                if (ImGui::IsItemHovered())
-                {
-                    ImGui::BeginTooltip();
-                    ImGui::PushTextWrapPos(ImGui::GetFontSize() * 35.0f);
-                    ImGui::TextUnformatted("xd");
-                    ImGui::PopTextWrapPos();
-                    ImGui::EndTooltip();
+                float * leafs = new float[n];
+                float * maxes = new float[n];
+                float * mines = new float[n];
+                for (int i = 0; i < n; i++) {
+                    leafs[i] = agentStats_[i + 1].calculatedLeafs;
+                    maxes[i] = agentStats_[i + 1].bestScore;
+                    mines[i] = agentStats_[i + 1].worstScore;
                 }
-                
+                auto[leafsMin, leafsMax] = std::minmax_element(leafs, leafs + n);
+                auto[maxesMin, maxesMax] = std::minmax_element(maxes, maxes + n);
+                auto[minesMin, minesMax] = std::minmax_element(mines, mines + n);
 
-
-
-                /*
-                draw_list->AddRectFilled(
-                    ImVec2(upper_left_x, upper_left_y),
-                    ImVec2(upper_left_x + side_length, upper_left_y + side_length), 
-                    color);
-                    */
-
+                ImGui::PlotLines("# Calculated Leafs", leafs, n, 0, NULL, *leafsMin , *leafsMax, plotSize); 
+                ImGui::PlotHistogram("Max Fitness", maxes, n, 0, NULL, *maxesMin , *maxesMax, plotSize); 
+                ImGui::PlotHistogram("Min Fitness", mines, n, 0, NULL, *minesMin , *minesMax, plotSize); 
+                delete [] maxes;
+                delete [] mines;
+                delete [] leafs;
             }
-            // ImGui::NextColumn();
-
-            ImGui::NextColumn();
 
 
             ImGui::EndTabItem();
         }
+
+
+
+
         ImGui::EndTabBar();
     }
 

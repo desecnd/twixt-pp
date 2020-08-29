@@ -43,9 +43,7 @@ public:
             ImGui::SFML::Init(window_);
         }
 
-    ~Game() {
-        ImGui::SFML::Shutdown();
-    }
+    ~Game() { ImGui::SFML::Shutdown(); }
 
     bool makeMove(int player, Move move);
 
