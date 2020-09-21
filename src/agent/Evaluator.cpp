@@ -1,5 +1,7 @@
 #include "Evaluator.hpp"
 
+#include <sstream>
+
 namespace agent {
     std::vector<std::vector<int>> Evaluator::calculateDistance(const Board& board, int testingPlayer) {
 
@@ -38,7 +40,10 @@ namespace agent {
         return dist;
     }
     int Evaluator::simulateExploitation(Board board) {
-        // std::cerr << "Current PLayer: " << board.currentPlayer() << ";";
+        /// Simulates Greedy Exploitation if every player would greedly
+        /// Go for an edge, and who would win 
+        /// Takes advantage of blocking etc
+
         std::queue<Position> Q;
 
         for (int r = 0; r < Board::kRows; r++) 
@@ -214,12 +219,104 @@ namespace agent {
     }
 
     Score Evaluator::connectedComponentsHeuristic(const Board& board) {
+        /// Returns difference of connected componenets 
+        /// In respect to player 1 -> positive if player 2 has more 
         int ccp1 = countConnectedComponents(board, 1);
         int ccp2 = countConnectedComponents(board, 2);
         
         Score p1 { static_cast<Score>(ccp1) };
         Score p2 { static_cast<Score>(ccp2) };
         return p2 - p1;
+    }
+
+    int Evaluator::dijkstraMinimumLinks(const Board& board, int player) {
+        /// Calculates Minimum Links remaining to connect 2 sides for player p
+
+        struct Node {
+            Position p;
+            int d;
+
+            Node(Position pp, int dd) : p(pp), d(dd) {}
+        };
+
+        struct Comparator {
+
+            // compare by distance
+            bool operator()(const Node& a, const Node& b) {
+                if ( a.d == b.d ) {
+                    if ( a.p.row() == b.p.row() ) return a.p.col() < b.p.col();
+                    else return a.p.row() < b.p.row();
+                }
+                else return a.d < b.d;
+            }
+        };
+
+        std::priority_queue<Node, std::vector<Node>, Comparator> pq;
+        std::vector<std::vector<int>> dist(Board::kRows, std::vector<int>(Board::kCols, kInf));
+
+        if ( player == 1 ) {
+            for (int c = 0; c < Board::kCols; c++) {
+                dist[0][c] = 0;
+                pq.emplace(Position(0, c), 0);
+            }
+        }
+        else if ( player == 2 ) {
+            for (int r = 0; r < Board::kRows; r++) {
+                dist[r][0] = 0;
+                pq.emplace(Position(r, 0), 0);
+            }
+        }
+
+
+        while ( pq.size() ) {
+            Node n { pq.top() }; pq.pop();
+
+            if ( dist[n.p.row()][n.p.col()] != n.d ) 
+                continue;
+
+            for (int directionInt = 0; directionInt < DIRECTIONS; directionInt++) {
+                Direction direction { static_cast<Direction>(directionInt) };
+
+                Position u { n.p + getVector(direction) };
+
+                if ( board.possible(u, player) ) {
+                    int w = 1;
+                    if ( board.linkExist(n.p, direction, player) ) w = 0;
+
+                    if ( board.pegOwner(u) != board.opponent(player) 
+                        && board.linkPossible(n.p, direction, player) 
+                        && n.d + w < dist[u.row()][u.col()] ) 
+                    {
+                        dist[u.row()][u.col()] = n.d + w;
+                        pq.emplace(u, n.d + w);
+                    }
+                }
+            }
+        }
+
+        int minDist { kInf };
+        if ( player == 1 ) {
+            for (int c = 0; c < Board::kCols; c++) 
+                minDist = std::min(minDist, dist[Board::kRows - 1][c]);
+        }
+        else if ( player == 2 ) {
+            for (int r = 0; r < Board::kRows; r++) 
+                minDist = std::min(minDist, dist[r][Board::kCols - 1]);
+        }
+
+        return minDist;
+    }
+
+    Score Evaluator::minimumLinksHeuristic(const Board& board) {
+        /// Returns difference between minimum links remaining in terms
+        /// of first player
+        /// if cut interval into range: [-10, 10]
+
+        int minDistP1 { dijkstraMinimumLinks(board, 1) };
+        int minDistP2 { dijkstraMinimumLinks(board, 2) };
+        
+        int difference { minDistP2 - minDistP1 };
+        return std::min(std::max(difference, -10), 10);
     }
 
     Score Evaluator::edgeDistanceHeuristic(const Board& board) {
@@ -246,6 +343,22 @@ namespace agent {
 
     }
 
+    Score Evaluator::pieceHeuristic(const Board& board) {
+        Score val  { 0 };
+        for (int r = 0; r < Board::kRows; r++) 
+        for (int c = 0; c < Board::kCols; c++) {
+            Position pos { r, c };
+            if ( board.pegOwner(pos) == 0) continue;
+
+
+            int vertical = std::min(r, Board::kRows - 1 - r);
+            int horizontal = std::min(c, Board::kCols - 1 - c);
+
+            val += (board.pegOwner(pos) == 1 ? 1 : -1) * std::min(horizontal, vertical);
+        }
+        return val;
+    }
+
     Score Evaluator::exploitationHeuristic(const Board& board) {
         int winner = simulateExploitation(board);
         return static_cast<Score>(winner == 1 ? 1 : -1);
@@ -264,8 +377,45 @@ namespace agent {
 
             Score expHeur { exploitationHeuristic(board) };
             Score ccHeur { connectedComponentsHeuristic(board) };
-            Score sum = expHeur * 100 + ccHeur * 20;
+            Score pieceHeur { pieceHeuristic(board) };
+            // Score edgeHeur { edgeWinnersHeuristic(board) };
+            Score minLinkHeur { minimumLinksHeuristic(board) };
+            // Score sum = expHeur * 100 + ccHeur * 20;
+            Score sum = expHeur * 1000 + minLinkHeur * 100 + pieceHeur * 20 + ccHeur * 200;
+            // Score sum = expHeur * 1000 + minLinkHeur * 100 + ccHeur * 200;
             return sum;
         }
+    }
+
+    std::string Evaluator::getRaport(const Board& board) {
+        // Score edgeHeur { edgeDistanceHeuristic(board) };
+        int gameOver = board.isGameOver();
+
+        std::ostringstream os;
+
+        if ( gameOver == 1 ) os << "= Win: " << kWin;
+        else if ( gameOver == 2 ) os << "= Loose: " << kWin; 
+        else { 
+            int sureWinner = board.isGameSealed();
+            if ( sureWinner == 1 ) os << "= Sealed Win: " << kSureWin;
+            else if ( sureWinner == 2 ) os << "= Sealed Loose: " << -kSureWin;
+
+            Score expHeur { exploitationHeuristic(board) };
+            Score ccHeur { connectedComponentsHeuristic(board) };
+            Score pieceHeur { pieceHeuristic(board) };
+            Score edgeHeur { edgeWinnersHeuristic(board) };
+            Score minLinkHeur { minimumLinksHeuristic(board) };
+
+            os << " 1000*[expHeur:" << expHeur << "]";
+            os << " + " << "200*[ccHeur:" << ccHeur << "]"; 
+            os << " + " << "100*[minLinkHeur:" << minLinkHeur << "]";
+            os << " = "; 
+            // Score sum { expHeur * 100 + ccHeur * 20 };
+            // Score sum { expHeur * 1000 + minLinkHeur * 100 + ccHeur * 200 };
+            Score sum { expHeur * 1000 + minLinkHeur * 100 + pieceHeur * 20 + ccHeur * 200 + 50 * edgeHeur };
+
+            os << sum;
+        }
+        return os.str();
     }
 }
