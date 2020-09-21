@@ -39,6 +39,8 @@ namespace agent {
         for (int r = 0; r < Board::kRows; r++) 
         for (int c = 0; c < Board::kCols; c++) {
             Position pos { r, c }, way, next;
+            if ( board.pegOwner(pos) != player )
+                continue;
 
             way = up * depth; next = pos + way;
             if ( board.valid(next) && board.pegOwner(next) == 0 && !vis[next.row()][next.col()] ) {
