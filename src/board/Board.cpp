@@ -60,7 +60,7 @@ int Board::isGameOver() const {
 int Board::isGameSealed() const {
 
     {  // First Player
-        std::vector<std::vector<int>> vis(kRows, std::vector<int>(kCols));
+        std::vector<std::vector<int>> vis(kRows, std::vector<int>(kCols, 0));
 
         for (int row = 0; row < 2; row++)
         for (int col = 1; col < kCols - 1; col++)
@@ -74,11 +74,11 @@ int Board::isGameSealed() const {
 
     {   // Second Player
 
-        std::vector<std::vector<int>> vis(kRows, std::vector<int>(kCols));
+        std::vector<std::vector<int>> vis(kRows, std::vector<int>(kCols, 0));
 
         for (int row = 1; row < kRows - 1; row++)
         for (int col = 0; col < 2; col++)
-            if ( pegOwner(Position(row, col)) == 1 )
+            if ( pegOwner(Position(row, col)) == 2 )
                 dfs(vis, Position(row, col), 2);
             
         for (int row = 1; row < kRows; row++)
