@@ -182,6 +182,15 @@ void Game::renderAgent()
 
             if (ImGui::CollapsingHeader("Plots")) {
                 ImGui::Text("Score function plots");
+
+                ImGui::Text("Tree Nodes:");
+                ImGui::Text(std::to_string(lastStats.treeNodes).c_str());
+                ImGui::Text("Calculated: ");
+                ImGui::Text(std::to_string(lastStats.visitedNodes).c_str());
+                ImGui::Text("Evaluations: ");
+                ImGui::Text(std::to_string(lastStats.transpositionMisses).c_str());
+                ImGui::Text("Score function plots");
+
                 int n = agentStats_.size() - 1;
 
                 ImVec2 plotSize(500, 100);
@@ -204,6 +213,11 @@ void Game::renderAgent()
                 delete [] maxes;
                 delete [] mines;
                 delete [] leafs;
+            }
+
+            if (ImGui::CollapsingHeader("Raw Fitness Data")) {
+                // ImGui::Text(lastStats.raport.c_str());
+                for (int i = 0; i < agentStats_.size(); i++) ImGui::Text(agentStats_[i].raport.c_str());
             }
 
 
