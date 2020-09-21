@@ -11,14 +11,18 @@
 namespace agent {
 
     struct Stats {
+        std::string raport;
         int calculatedLeafs;
-        int transpositionHits;
+        int transpositionMisses;
+        int visitedNodes;
+        int treeNodes;
         Score bestScore;
         Score worstScore;
         Score positionScore[Board::kRows][Board::kCols];
         int positionOrder[Board::kRows][Board::kCols];
 
-        Stats() : calculatedLeafs(0), transpositionHits(0), bestScore(-kInf), worstScore(kInf) {
+        Stats() : raport(""), calculatedLeafs(0), transpositionMisses(0), 
+            visitedNodes(0), treeNodes(0), bestScore(-kInf), worstScore(kInf) {
             for (int row = 0; row < Board::kRows; row++) 
             for (int col = 0; col < Board::kCols; col++) {
                     positionOrder[row][col] = -1;

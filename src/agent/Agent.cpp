@@ -9,15 +9,15 @@ namespace agent {
         if ( transpositionTable_.find(boardHash) == transpositionTable_.end() ) {
             Score boardScore { evaluator_.evaluateBoardScore(board) };
             transpositionTable_[boardHash] = boardScore; 
-        }
-        else {
-            myStats_.transpositionHits++;
+            myStats_.transpositionMisses++;
         }
 
         return transpositionTable_[boardHash];
     }
 
     void Agent::fillMyStats(Board board) {
+        myStats_.raport = evaluator_.getRaport(board);
+
         std::vector<Position> positions { moveOrganizer_.getAvailablePositions(board) };
 
         for (int i = 0; i < positions.size(); i++) {
@@ -38,6 +38,8 @@ namespace agent {
     }
 
     std::pair<Score, Position> Agent::ABNegamax(Board board, int maxDepth, int depth, Score alpha, Score beta, int color) {
+        myStats_.visitedNodes++;
+
         if ( depth == maxDepth || board.isGameOver() ) {
             myStats_.calculatedLeafs++;
             return {color * evaluateAndRemember(board), {-1, -1}}; 
@@ -81,10 +83,16 @@ namespace agent {
     }
 
     Move Agent::getMove(Board board) {
+        static int round = 0;
+
+        round += 2;
+
         Stats newStats;
         myStats_ = newStats;
+        int n = Board::kRows * (Board::kCols - 2) - round;
+        myStats_.treeNodes = n * n + n + 1;
+        myStats_.raport = evaluator_.getRaport(board);
         auto[bestScore, bestPosition] = ABNegamax(board, 2, 0, -kInf, kInf, perspective_);
-        // fillMyStats(board);
         return posToMove(bestPosition);
     }
 
